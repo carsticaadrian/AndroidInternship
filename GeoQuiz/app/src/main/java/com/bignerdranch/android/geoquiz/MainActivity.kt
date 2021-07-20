@@ -49,11 +49,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         trueButton.setOnClickListener {
-            checkAnswear(true)
+            checkAnswer(true)
         }
 
         falseButton.setOnClickListener {
-            checkAnswear(false)
+            checkAnswer(false)
         }
 
         nextButton.setOnClickListener {
@@ -103,38 +103,51 @@ class MainActivity : AppCompatActivity() {
         questionTextView.setText(questionTextResId)
 
         if (questionBank[currentIndex] in answeredQuestion) {
-            trueButton.isEnabled = false
-            falseButton.isEnabled = false
+            disableButtons()
         } else {
-            trueButton.isEnabled = true
-            falseButton.isEnabled = true
+            enableButtons()
         }
 
         if (answeredQuestion.size == questionBank.size) {
-            val quizProgress :Float =  correctAnswers / questionBank.size.toFloat() * 100
-            Toast.makeText(
-                this,
-                "Congratulation! Your score is $quizProgress%",
-                Toast.LENGTH_SHORT
-            ).show()
+            showProgress()
         }
     }
 
-    private fun checkAnswear(userAnswear: Boolean) {
-        val correctAnswear = questionBank[currentIndex].answer
-        val messageResId : Int
-         if (userAnswear == correctAnswear) {
+    private fun checkAnswer(userAnswer: Boolean) {
+        val correctAnswer = questionBank[currentIndex].answer
+        val messageResId: Int
+
+        if (userAnswer == correctAnswer) {
             messageResId = R.string.correct_toast
             correctAnswers++
-             Log.d("Correct",""+correctAnswers)
         } else {
             messageResId = R.string.incorrect_toast
         }
 
+        disableButtons()
+
         answeredQuestion.add(questionBank[currentIndex])
-        trueButton.isEnabled = false
-        falseButton.isEnabled = false
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun disableButtons() {
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
+    }
+
+    private fun enableButtons() {
+        trueButton.isEnabled = true
+        falseButton.isEnabled = true
+    }
+
+    private fun showProgress(){
+        val quizProgress: Float = correctAnswers / questionBank.size.toFloat() * 100
+
+        Toast.makeText(
+            this,
+            "Congratulation! Your score is $quizProgress%",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
