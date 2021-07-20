@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="24dp"
+        android:padding="@dimen/textView_padding"
         tools:text="@string/question_australia" />
 
     <LinearLayout
@@ -25,14 +25,14 @@
             android:id="@+id/true_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="@dimen/button_margin"
             android:text="@string/true_button" />
 
         <Button
             android:id="@+id/false_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
+            android:layout_marginStart="@dimen/button_margin"
             android:text="@string/false_button" />
 
     </LinearLayout>
@@ -43,10 +43,10 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/prev_button"
+            android:id="@+id/previous_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="@dimen/button_margin"
             android:contentDescription="@string/prev_button_desc"
             android:src="@drawable/arrow_left" />
 
@@ -54,7 +54,7 @@
             android:id="@+id/next_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
+            android:layout_marginStart="@dimen/button_margin"
             android:contentDescription="@string/next_button_desc"
             android:src="@drawable/arrow_right" />
 

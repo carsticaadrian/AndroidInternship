@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var falseButton: Button
     private lateinit var nextButton: ImageButton
     private lateinit var questionTextView: TextView
-    private lateinit var prevButton: ImageButton
+    private lateinit var previousButton: ImageButton
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -41,8 +41,13 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         questionTextView = findViewById(R.id.question_text_view)
-        prevButton = findViewById(R.id.prev_button)
+        previousButton = findViewById(R.id.previous_button)
 
+        setupClickListeners()
+        updateQuestion()
+    }
+
+    private fun setupClickListeners() {
         questionTextView.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
@@ -61,16 +66,10 @@ class MainActivity : AppCompatActivity() {
             updateQuestion()
         }
 
-        prevButton.setOnClickListener {
-            if (currentIndex == 0) {
-                currentIndex = questionBank.size - 1
-            } else {
-                currentIndex = (currentIndex - 1) % questionBank.size
-            }
+        previousButton.setOnClickListener {
+            setCurrentIndex()
             updateQuestion()
         }
-
-        updateQuestion()
     }
 
     override fun onStart() {
@@ -115,6 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = questionBank[currentIndex].answer
+
         val messageResId: Int
 
         if (userAnswer == correctAnswer) {
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         falseButton.isEnabled = true
     }
 
-    private fun showProgress(){
+    private fun showProgress() {
         val quizProgress: Float = correctAnswers / questionBank.size.toFloat() * 100
 
         Toast.makeText(
@@ -149,5 +149,13 @@ class MainActivity : AppCompatActivity() {
             "Congratulation! Your score is $quizProgress%",
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    private fun setCurrentIndex() {
+        currentIndex = if (currentIndex == 0) {
+            questionBank.size - 1
+        } else {
+            (currentIndex - 1) % questionBank.size
+        }
     }
 }
