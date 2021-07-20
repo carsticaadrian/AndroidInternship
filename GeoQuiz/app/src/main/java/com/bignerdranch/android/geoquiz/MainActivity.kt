@@ -2,10 +2,13 @@ package com.bignerdranch.android.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,10 +27,14 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true)
     )
 
+    private var answeredQuestion = mutableListOf<Question>()
+
     private var currentIndex = 0
+    private var correctAnswers = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
         trueButton = findViewById(R.id.true_button)
@@ -66,19 +73,67 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart() called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume() called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause() called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop() called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy() called")
+    }
+
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
+
+        if (questionBank[currentIndex] in answeredQuestion) {
+            trueButton.isEnabled = false
+            falseButton.isEnabled = false
+        } else {
+            trueButton.isEnabled = true
+            falseButton.isEnabled = true
+        }
+
+        if (answeredQuestion.size == questionBank.size) {
+            val quizProgress :Float =  correctAnswers / questionBank.size.toFloat() * 100
+            Toast.makeText(
+                this,
+                "Congratulation! Your score is $quizProgress%",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun checkAnswear(userAnswear: Boolean) {
         val correctAnswear = questionBank[currentIndex].answer
-
-        val messageResId = if (userAnswear == correctAnswear) {
-            R.string.correct_toast
+        val messageResId : Int
+         if (userAnswear == correctAnswear) {
+            messageResId = R.string.correct_toast
+            correctAnswers++
+             Log.d("Correct",""+correctAnswers)
         } else {
-            R.string.incorrect_toast
+            messageResId = R.string.incorrect_toast
         }
+
+        answeredQuestion.add(questionBank[currentIndex])
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
     }
