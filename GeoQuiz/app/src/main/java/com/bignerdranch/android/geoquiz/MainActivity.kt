@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
-        val currentIndex = savedInstanceState?.getInt(KEY_INDEX) ?:0
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX) ?: 0
         quizViewModel.currentIndex = currentIndex
 
         trueButton = findViewById(R.id.true_button)
@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.i("TAG","onSaveInstanceState")
-        outState.putInt(KEY_INDEX,quizViewModel.currentIndex)
+        Log.i("TAG", "onSaveInstanceState")
+        outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
     }
 
     override fun onStop() {
