@@ -54,4 +54,8 @@ class QuizViewModel : ViewModel() {
     fun getQuizProgress(): Float {
         return correctAnswers / questionBank.size.toFloat() * 100
     }
+
+    fun addCorrectAnswer() {
+        correctAnswers++
+    }
 }

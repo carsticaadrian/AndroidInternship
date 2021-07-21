@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         if (userAnswer == correctAnswer) {
             messageResId = R.string.correct_toast
-            quizViewModel.correctAnswers++
+            quizViewModel.addCorrectAnswer()
         } else {
             messageResId = R.string.incorrect_toast
         }
