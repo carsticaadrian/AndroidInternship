@@ -21,6 +21,8 @@ class QuizViewModel : ViewModel() {
 
     private var answeredQuestion = mutableListOf<Question>()
 
+    private var cheatedQuestion = mutableMapOf<Int, Boolean>()
+
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer
 
@@ -57,5 +59,13 @@ class QuizViewModel : ViewModel() {
 
     fun addCorrectAnswer() {
         correctAnswers++
+    }
+
+    fun addCheatedQuestion(isCheater: Boolean) {
+        cheatedQuestion[currentIndex] = isCheater
+    }
+
+    fun checkCheating(): Boolean {
+        return cheatedQuestion[currentIndex] == true
     }
 }
