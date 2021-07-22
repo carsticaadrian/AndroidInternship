@@ -2,4 +2,5 @@
 <resources>
     <dimen name="button_margin">3dp</dimen>
     <dimen name="textView_padding">24dp</dimen>
+    <dimen name="cheat_button_marginTop">24dp</dimen>
 </resources>

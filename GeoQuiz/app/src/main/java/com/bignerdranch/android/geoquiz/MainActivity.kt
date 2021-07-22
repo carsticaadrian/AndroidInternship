@@ -1,13 +1,17 @@
 package com.bignerdranch.android.geoquiz
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
@@ -17,9 +21,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
+    private lateinit var cheatButton: Button
     private lateinit var nextButton: ImageButton
-    private lateinit var questionTextView: TextView
     private lateinit var previousButton: ImageButton
+    private lateinit var questionTextView: TextView
 
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProviders.of(this).get(QuizViewModel::class.java)
@@ -35,9 +40,10 @@ class MainActivity : AppCompatActivity() {
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
+        cheatButton = findViewById(R.id.cheat_button)
         nextButton = findViewById(R.id.next_button)
-        questionTextView = findViewById(R.id.question_text_view)
         previousButton = findViewById(R.id.previous_button)
+        questionTextView = findViewById(R.id.question_text_view)
 
         setupClickListeners()
         updateQuestion()
@@ -65,6 +71,10 @@ class MainActivity : AppCompatActivity() {
         previousButton.setOnClickListener {
             quizViewModel.moveToPrevious()
             updateQuestion()
+        }
+
+        cheatButton.setOnClickListener {
+            startIntentToCheatActivity()
         }
     }
 
@@ -119,8 +129,12 @@ class MainActivity : AppCompatActivity() {
         val messageResId: Int
 
         if (userAnswer == correctAnswer) {
-            messageResId = R.string.correct_toast
-            quizViewModel.addCorrectAnswer()
+            if (quizViewModel.checkCheating()) {
+                messageResId = R.string.judgment_toast
+            } else {
+                messageResId = R.string.correct_toast
+                quizViewModel.addCorrectAnswer()
+            }
         } else {
             messageResId = R.string.incorrect_toast
         }
@@ -149,4 +163,18 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
     }
+
+    private fun startIntentToCheatActivity() {
+        val answerIsTrue = quizViewModel.currentQuestionAnswer
+        val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+        startForResult.launch(intent)
+    }
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                quizViewModel.addCheatedQuestion(
+                    result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false)
+            }
+        }
 }
