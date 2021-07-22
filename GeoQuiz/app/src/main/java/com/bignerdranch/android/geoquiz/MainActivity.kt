@@ -1,17 +1,21 @@
 package com.bignerdranch.android.geoquiz
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
@@ -25,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var previousButton: ImageButton
     private lateinit var questionTextView: TextView
+    private lateinit var remainingTokensTextView: TextView
 
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProviders.of(this).get(QuizViewModel::class.java)
@@ -44,7 +49,9 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         previousButton = findViewById(R.id.previous_button)
         questionTextView = findViewById(R.id.question_text_view)
+        remainingTokensTextView = findViewById(R.id.tokens_text_view)
 
+        updateTokensTextView()
         setupClickListeners()
         updateQuestion()
     }
@@ -74,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         cheatButton.setOnClickListener {
-            startIntentToCheatActivity()
+            startIntentToCheatActivity(it)
         }
     }
 
@@ -156,6 +163,11 @@ class MainActivity : AppCompatActivity() {
         falseButton.isEnabled = true
     }
 
+    private fun disableCheatButton() {
+        cheatButton.isEnabled = false
+        cheatButton.isEnabled = false
+    }
+
     private fun showProgress() {
         Toast.makeText(
             this,
@@ -164,17 +176,39 @@ class MainActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun startIntentToCheatActivity() {
+    private fun startIntentToCheatActivity(view: View) {
         val answerIsTrue = quizViewModel.currentQuestionAnswer
-        val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-        startForResult.launch(intent)
+        val tokens = quizViewModel.cheatTokens
+        val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue, tokens)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val options =
+                ActivityOptionsCompat.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+            startForResult.launch(intent, options)
+        } else {
+            startForResult.launch(intent)
+        }
     }
 
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 quizViewModel.addCheatedQuestion(
-                    result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false)
+                    result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+                )
+                quizViewModel.updateTokens(result.data?.getIntExtra(EXTRA_REMAINING_TOKENS, 3) ?: 3)
+                updateTokensTextView()
+                checkRemainingTokens()
             }
         }
+
+    private fun updateTokensTextView() {
+        remainingTokensTextView.text = "Remaining tokens : ${quizViewModel.cheatTokens}"
+    }
+
+    private fun checkRemainingTokens() {
+        if (quizViewModel.cheatTokens == 0) {
+            disableCheatButton()
+        }
+    }
 }
