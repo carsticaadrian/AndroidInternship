@@ -9,6 +9,7 @@ class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
     var correctAnswers = 0
+    var cheatTokens = 3
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -67,5 +68,9 @@ class QuizViewModel : ViewModel() {
 
     fun checkCheating(): Boolean {
         return cheatedQuestion[currentIndex] == true
+    }
+
+    fun updateTokens(tokens: Int) {
+        cheatTokens = tokens
     }
 }

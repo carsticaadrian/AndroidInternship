@@ -43,6 +43,13 @@
         android:layout_marginTop="@dimen/cheat_button_marginTop"
         android:text="@string/cheat_button" />
 
+    <TextView
+        android:id="@+id/tokens_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/textView_padding"
+        tools:text="Tokens left : 3" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
