@@ -1,6 +1,5 @@
-package com.bignerdranch.android.geoquiz
+package com.bignerdranch.android.geoquiz.adrian
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 
 private const val TAG = "QuizViewModel"
@@ -62,15 +61,16 @@ class QuizViewModel : ViewModel() {
         correctAnswers++
     }
 
-    fun addCheatedQuestion(isCheater: Boolean) {
-        cheatedQuestion[currentIndex] = isCheater
-    }
-
     fun checkCheating(): Boolean {
         return cheatedQuestion[currentIndex] == true
     }
 
-    fun updateTokens(tokens: Int) {
-        cheatTokens = tokens
+    fun addCheatedQuestion(isCheater: Boolean) {
+        cheatedQuestion[currentIndex] = isCheater
+        if (isCheater) updateTokens()
+    }
+
+    fun updateTokens() {
+        cheatTokens--
     }
 }

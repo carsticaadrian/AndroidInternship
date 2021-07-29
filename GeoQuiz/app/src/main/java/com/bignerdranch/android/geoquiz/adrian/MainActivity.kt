@@ -1,11 +1,7 @@
-package com.bignerdranch.android.geoquiz
+package com.bignerdranch.android.geoquiz.adrian
 
 import android.app.Activity
-import android.app.ActivityOptions
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProviders
 
@@ -129,6 +126,8 @@ class MainActivity : AppCompatActivity() {
         if (quizViewModel.checkProgress()) {
             showProgress()
         }
+
+        updateCheatButton()
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
@@ -136,19 +135,15 @@ class MainActivity : AppCompatActivity() {
         val messageResId: Int
 
         if (userAnswer == correctAnswer) {
-            if (quizViewModel.checkCheating()) {
-                messageResId = R.string.judgment_toast
-            } else {
-                messageResId = R.string.correct_toast
-                quizViewModel.addCorrectAnswer()
-            }
+            messageResId = R.string.correct_toast
+            quizViewModel.addCorrectAnswer()
         } else {
             messageResId = R.string.incorrect_toast
         }
 
-        disableButtons()
-
         quizViewModel.answerQuestion()
+        disableButtons()
+        updateCheatButton()
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
     }
@@ -166,6 +161,11 @@ class MainActivity : AppCompatActivity() {
     private fun disableCheatButton() {
         cheatButton.isEnabled = false
         cheatButton.isEnabled = false
+    }
+
+    private fun enableCheatButton() {
+        cheatButton.isEnabled = true
+        cheatButton.isEnabled = true
     }
 
     private fun showProgress() {
@@ -196,9 +196,8 @@ class MainActivity : AppCompatActivity() {
                 quizViewModel.addCheatedQuestion(
                     result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
                 )
-                quizViewModel.updateTokens(result.data?.getIntExtra(EXTRA_REMAINING_TOKENS, 3) ?: 3)
                 updateTokensTextView()
-                checkRemainingTokens()
+                updateCheatButton()
             }
         }
 
@@ -206,9 +205,11 @@ class MainActivity : AppCompatActivity() {
         remainingTokensTextView.text = "Remaining tokens : ${quizViewModel.cheatTokens}"
     }
 
-    private fun checkRemainingTokens() {
-        if (quizViewModel.cheatTokens == 0) {
+    private fun updateCheatButton() {
+        if (quizViewModel.cheatTokens == 0 || quizViewModel.checkQuestion() || quizViewModel.checkCheating()) {
             disableCheatButton()
+        } else {
+            enableCheatButton()
         }
     }
 }

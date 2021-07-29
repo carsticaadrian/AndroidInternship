@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context="com.bignerdranch.android.geoquiz.adrian.MainActivity">
 
     <TextView
         android:id="@+id/question_text_view"
